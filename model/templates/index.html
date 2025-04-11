@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Spending Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .error {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            color: red;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Customer Spending Prediction</h1>
+    <form method="POST">
+        <label for="age">Age:</label>
+        <input type="number" name="age" required>
+
+        <label for="income">Annual Income (k$):</label>
+        <input type="number" name="income" required>
+
+        <label for="gender">Gender:</label>
+        <select name="gender" required>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
+
+        <label for="occupation">Occupation:</label>
+        <select name="occupation" required>
+            {% for occupation in occupations %}
+                <option value="{{ occupation }}">{{ occupation }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Predict Spending Score</button>
+    </form>
+
+    {% if error_message %}
+        <div class="error">
+            <h2>{{ error_message }}</h2>
+        </div>
+    {% endif %}
+
+    {% if prediction is not none %}
+        <div class="result">
+            <h2>Predicted Spending Score: {{ prediction }}</h2>
+        </div>
+    {% endif %}
+</div>
+
+</body>
+</html>
