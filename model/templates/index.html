@@ -1,120 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Spending Prediction</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .container {
-            background-color: #ffffff;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 400px;
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 16px;
-            color: #333;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        .result {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 18px;
-            color: #333;
-        }
-
-        .error {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 18px;
-            color: red;
-        }
-
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Spending Score Predictor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
-<body>
-
-<div class="container">
-    <h1>Customer Spending Prediction</h1>
-    <form method="POST">
-        <label for="age">Age:</label>
-        <input type="number" name="age" required>
-
-        <label for="income">Annual Income (k$):</label>
-        <input type="number" name="income" required>
-
-        <label for="gender">Gender:</label>
-        <select name="gender" required>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
+<body class="bg-gradient-to-br from-purple-100 to-blue-200 min-h-screen flex items-center justify-center">
+  <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg">
+    <h1 class="text-3xl font-extrabold text-center mb-6 text-indigo-800 flex items-center justify-center gap-2">
+      🔮 Spending Score Predictor
+    </h1>
+    
+    <form id="predict-form" class="space-y-4">
+      <div>
+        <label class="block text-gray-700 font-semibold">Gender</label>
+        <select name="Gender" class="w-full mt-1 p-2 border border-gray-300 rounded">
+          <option>Male</option>
+          <option>Female</option>
         </select>
+      </div>
 
-        <label for="occupation">Occupation:</label>
-        <select name="occupation" required>
-            {% for occupation in occupations %}
-                <option value="{{ occupation }}">{{ occupation }}</option>
-            {% endfor %}
-        </select>
+      <div>
+        <label class="block text-gray-700 font-semibold">Age</label>
+        <input type="number" name="Age" min="1" max="100" class="w-full mt-1 p-2 border border-gray-300 rounded" required />
+      </div>
 
-        <button type="submit">Predict Spending Score</button>
+      <div>
+        <label class="block text-gray-700 font-semibold">Annual Income (k$)</label>
+        <input type="number" name="Annual Income (k$)" min="1" class="w-full mt-1 p-2 border border-gray-300 rounded" required />
+      </div>
+
+      <div>
+        <label class="block text-gray-700 font-semibold">Occupation</label>
+        <input type="text" name="Occupation" class="w-full mt-1 p-2 border border-gray-300 rounded" placeholder="e.g., Artist, Doctor" required />
+      </div>
+
+      <div class="flex gap-3">
+        <button type="submit" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 rounded hover:opacity-90 transition">
+          🎯 Predict
+        </button>
+        <button type="reset" class="w-full border border-gray-300 text-gray-700 py-2 rounded hover:bg-gray-100 transition">
+          🔄 Reset
+        </button>
+      </div>
     </form>
 
-    {% if error_message %}
-        <div class="error">
-            <h2>{{ error_message }}</h2>
-        </div>
-    {% endif %}
+    <div id="loading" class="mt-6 text-center hidden text-indigo-500">⏳ Predicting...</div>
 
-    {% if prediction is not none %}
-        <div class="result">
-            <h2>Predicted Spending Score: {{ prediction }}</h2>
-        </div>
-    {% endif %}
-</div>
+    <div id="result" class="mt-6 text-center text-lg font-semibold text-indigo-800 fade-in hidden"></div>
+  </div>
 
+  <script>
+    const form = document.getElementById('predict-form');
+    const resultDiv = document.getElementById('result');
+    const loadingDiv = document.getElementById('loading');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      resultDiv.classList.add('hidden');
+      loadingDiv.classList.remove('hidden');
+
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        loadingDiv.classList.add('hidden');
+        resultDiv.textContent = `🎉 Predicted Spending Score: ${result.score}`;
+        resultDiv.classList.remove('hidden');
+        resultDiv.scrollIntoView({ behavior: 'smooth' });
+      } catch (err) {
+        loadingDiv.classList.add('hidden');
+        resultDiv.textContent = '❌ Error predicting score. Please try again.';
+        resultDiv.classList.remove('hidden');
+      }
+    });
+  </script>
 </body>
 </html>
