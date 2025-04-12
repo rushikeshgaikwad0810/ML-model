@@ -4,111 +4,197 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Spending Score Predictor</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;500;700&display=swap" rel="stylesheet">
   <style>
-    .fade-in {
-      animation: fadeIn 0.5s ease-in-out;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
+
+    body {
+      font-family: 'Raleway', sans-serif;
+      background: linear-gradient(135deg, #c3ecf3, #f5f5f5);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 42px;
+      color: #333;
+      margin-bottom: 30px;
+      font-weight: 700;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .form-container {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 600px;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 17px;
+      color: #333;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      background-color: rgba(255, 255, 255, 0.9);
+      transition: all 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: #6c63ff;
+      box-shadow: 0 0 8px #6c63ff88;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: #6c63ff;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #574fe1;
+      transform: translateY(-2px);
+    }
+
+    .result-container {
+      text-align: center;
+      margin-top: 30px;
+      background-color: #ffffffdd;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      animation: slideUp 0.5s ease-out;
+    }
+
+    .result-container p {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      letter-spacing: 1px;
+    }
+
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 30px;
+      }
+
+      .form-container {
+        padding: 30px 20px;
+      }
+
+      .result-container p {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-purple-100 to-blue-200 min-h-screen flex items-center justify-center">
-  <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg">
-    <h1 class="text-3xl font-extrabold text-center mb-6 text-indigo-800 flex items-center justify-center gap-2">
-      🔮 Spending Score Predictor
-    </h1>
-    
-    <form id="predict-form" class="space-y-4">
-      <div>
-        <label class="block text-gray-700 font-semibold">Gender</label>
-        <select name="Gender" class="w-full mt-1 p-2 border border-gray-300 rounded">
-          <option>Male</option>
-          <option>Female</option>
+<body>
+
+  <h1>Spending Score Predictor</h1>
+
+  <div class="form-container">
+    <form method="POST" action="/">
+      <div class="form-group">
+        <label for="age">🎂 Age</label>
+        <input type="number" name="age" id="age" required placeholder="Enter your age">
+      </div>
+
+      <div class="form-group">
+        <label for="income">💰 Annual Income (k$)</label>
+        <input type="number" name="income" id="income" required placeholder="Enter your income in thousands">
+      </div>
+
+      <div class="form-group">
+        <label for="gender">🧑 Gender</label>
+        <select name="gender" id="gender" required>
+          <option value="" disabled selected>Select your gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
         </select>
       </div>
 
-      <div>
-        <label class="block text-gray-700 font-semibold">Age</label>
-        <input type="number" name="Age" min="1" max="100" class="w-full mt-1 p-2 border border-gray-300 rounded" required />
+      <div class="form-group">
+        <label for="occupation">🧳 Occupation</label>
+        <select name="occupation" id="occupation" required>
+          <option value="" disabled selected>Select your occupation</option>
+          <option value="Artist">Artist</option>
+          <option value="Consultant">Consultant</option>
+          <option value="Developer">Developer</option>
+          <option value="Doctor">Doctor</option>
+          <option value="Engineer">Engineer</option>
+          <option value="Lawyer">Lawyer</option>
+          <option value="Manager">Manager</option>
+          <option value="Salesperson">Salesperson</option>
+          <option value="Student">Student</option>
+          <option value="Teacher">Teacher</option>
+        </select>
       </div>
 
-      <div>
-        <label class="block text-gray-700 font-semibold">Annual Income (k$)</label>
-        <input type="number" name="Annual Income (k$)" min="1" class="w-full mt-1 p-2 border border-gray-300 rounded" required />
-      </div>
-
-      <div>
-        <label class="block text-gray-700 font-semibold">Occupation</label>
-        <select name="Occupation" class="w-full mt-1 p-2 border border-gray-300 rounded" required>
-  <option disabled selected value="">-- Select Occupation --</option>
-  <option>Student</option>
-  <option>Engineer</option>
-  <option>Doctor</option>
-  <option>Artist</option>
-  <option>Teacher</option>
-  <option>Business</option>
-  <option>Lawyer</option>
-  <option>Scientist</option>
-  <option>Accountant</option>
-  <option>Manager</option>
-  <option>Self-employed</option>
-  <option>Retired</option>
-  <option>Unemployed</option>
-  <option>Other</option>
-</select>
-
-      </div>
-
-      <div class="flex gap-3">
-        <button type="submit" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 rounded hover:opacity-90 transition">
-          🎯 Predict
-        </button>
-        <button type="reset" class="w-full border border-gray-300 text-gray-700 py-2 rounded hover:bg-gray-100 transition">
-          🔄 Reset
-        </button>
-      </div>
+      <button type="submit">🎯 Predict Spending Score</button>
     </form>
 
-    <div id="loading" class="mt-6 text-center hidden text-indigo-500">⏳ Predicting...</div>
-
-    <div id="result" class="mt-6 text-center text-lg font-semibold text-indigo-800 fade-in hidden"></div>
+    <div class="result-container">
+      {% if prediction is not none %}
+        <p>🎯 Predicted Spending Score: {{ prediction }}</p>
+      {% endif %}
+    </div>
   </div>
 
-  <script>
-    const form = document.getElementById('predict-form');
-    const resultDiv = document.getElementById('result');
-    const loadingDiv = document.getElementById('loading');
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      resultDiv.classList.add('hidden');
-      loadingDiv.classList.remove('hidden');
-
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData.entries());
-
-      try {
-        const response = await fetch('/predict', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        });
-
-        const result = await response.json();
-
-        loadingDiv.classList.add('hidden');
-        resultDiv.textContent = `🎉 Predicted Spending Score: ${result.score}`;
-        resultDiv.classList.remove('hidden');
-        resultDiv.scrollIntoView({ behavior: 'smooth' });
-      } catch (err) {
-        loadingDiv.classList.add('hidden');
-        resultDiv.textContent = '❌ Error predicting score. Please try again.';
-        resultDiv.classList.remove('hidden');
-      }
-    });
-  </script>
 </body>
 </html>
